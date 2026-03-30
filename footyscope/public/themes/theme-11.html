@@ -1,0 +1,170 @@
+<!-- Theme 11: "Bento Dashboard" - Modern dashboard/analytics app with Apple bento-grid inspired layout -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FootyScope - Bento Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #0F172A; color: #E2E8F0; min-height: 100vh; }
+  a { color: inherit; text-decoration: none; }
+
+  /* Nav */
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; background: #0F172A; border-bottom: 1px solid #1E293B; position: sticky; top: 0; z-index: 50; }
+  .logo { font-size: 22px; font-weight: 800; color: #3B82F6; letter-spacing: -0.5px; }
+  .logo span { color: #22C55E; }
+  .nav-links { display: flex; gap: 24px; font-size: 14px; font-weight: 500; color: #94A3B8; }
+  .nav-links a:hover { color: #F8FAFC; }
+
+  /* Bento Grid */
+  .bento { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 24px 32px; max-width: 1280px; margin: 0 auto; }
+  .tile { background: #1E293B; border: 1px solid #334155; border-radius: 16px; padding: 24px; overflow: hidden; transition: border-color 0.2s; }
+  .tile:hover { border-color: #3B82F6; }
+  .tile.span2 { grid-column: span 2; }
+  .tile.tall { grid-row: span 2; }
+  .tile-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: #64748B; margin-bottom: 12px; }
+
+  /* Hero Tile */
+  .hero-tile { grid-column: span 2; background: linear-gradient(135deg, #1E3A5F 0%, #0F172A 100%); }
+  .hero-tile h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; }
+  .hero-tile h1 span { color: #3B82F6; }
+  .hero-tile p { color: #94A3B8; font-size: 15px; line-height: 1.6; }
+  .stat-row { display: flex; gap: 24px; margin-top: 20px; }
+  .stat-box { text-align: center; }
+  .stat-box .num { font-size: 28px; font-weight: 800; color: #22C55E; }
+  .stat-box .lbl { font-size: 11px; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Quick stat tiles */
+  .quick-stat .qs-val { font-size: 36px; font-weight: 800; color: #F59E0B; }
+  .quick-stat .qs-sub { font-size: 13px; color: #94A3B8; margin-top: 4px; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: #64748B; padding: 8px 12px; border-bottom: 1px solid #334155; font-weight: 600; }
+  td { padding: 10px 12px; border-bottom: 1px solid #1E293B; }
+  tr:hover td { background: rgba(59,130,246,0.05); }
+  .rank-badge { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 8px; font-weight: 700; font-size: 12px; }
+  .rank-1 { background: #22C55E20; color: #22C55E; }
+  .rank-2 { background: #3B82F620; color: #3B82F6; }
+  .rank-3 { background: #F59E0B20; color: #F59E0B; }
+  .rank-4 { background: #64748B30; color: #94A3B8; }
+  .pos-tag { background: #334155; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+  .rating-bar { width: 48px; height: 6px; background: #334155; border-radius: 3px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 6px; }
+  .rating-bar .fill { height: 100%; border-radius: 3px; background: #3B82F6; }
+
+  /* Player Card */
+  .player-card { display: flex; flex-direction: column; gap: 16px; }
+  .player-header { display: flex; align-items: center; gap: 16px; }
+  .player-avatar { width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, #3B82F6, #22C55E); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #fff; }
+  .player-name { font-size: 18px; font-weight: 700; }
+  .player-meta { font-size: 12px; color: #94A3B8; }
+
+  /* Radar via SVG */
+  .radar-wrap { display: flex; justify-content: center; padding: 8px 0; }
+  .radar-wrap svg { width: 180px; height: 180px; }
+  .radar-grid { fill: none; stroke: #334155; stroke-width: 0.5; }
+  .radar-shape { fill: rgba(59,130,246,0.2); stroke: #3B82F6; stroke-width: 1.5; }
+  .radar-label { font-size: 7px; fill: #94A3B8; text-anchor: middle; font-family: 'Inter', sans-serif; }
+
+  .stat-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill { background: #334155; padding: 6px 12px; border-radius: 8px; font-size: 12px; }
+  .pill strong { color: #22C55E; margin-right: 4px; }
+
+  .scout-report { font-size: 13px; line-height: 1.7; color: #94A3B8; border-left: 3px solid #F59E0B; padding-left: 12px; }
+
+  /* Footer */
+  footer { text-align: center; padding: 32px; font-size: 12px; color: #475569; border-top: 1px solid #1E293B; margin-top: 24px; }
+
+  @media (max-width: 768px) {
+    .bento { grid-template-columns: 1fr; }
+    .tile.span2, .hero-tile { grid-column: span 1; }
+    .tile.tall { grid-row: span 1; }
+    nav { padding: 12px 16px; }
+    .bento { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">Footy<span>Scope</span></div>
+  <div class="nav-links"><a href="#">Rankings</a><a href="#">Prospects</a><a href="#">Clubs</a><a href="#">Analytics</a></div>
+</nav>
+
+<div class="bento">
+  <!-- Hero 2x1 -->
+  <div class="tile hero-tile span2">
+    <div class="tile-label">2026 Draft Hub</div>
+    <h1>Track Every <span>Prospect</span></h1>
+    <p>Live scouting reports, analytics, and rankings for the upcoming AFL National Draft.</p>
+    <div class="stat-row">
+      <div class="stat-box"><div class="num">247</div><div class="lbl">Prospects</div></div>
+      <div class="stat-box"><div class="num">18</div><div class="lbl">Clubs</div></div>
+      <div class="stat-box"><div class="num">84</div><div class="lbl">Reports</div></div>
+    </div>
+  </div>
+
+  <!-- Quick stats 1x1 -->
+  <div class="tile quick-stat">
+    <div class="tile-label">Top Rated</div>
+    <div class="qs-val">92.4</div>
+    <div class="qs-sub">Lachlan Hargraves - MID</div>
+  </div>
+  <div class="tile quick-stat">
+    <div class="tile-label">Rising Fast</div>
+    <div class="qs-val">+14</div>
+    <div class="qs-sub">Tom Birrell moved up in rankings</div>
+  </div>
+
+  <!-- Rankings Table 2x1 -->
+  <div class="tile span2">
+    <div class="tile-label">Phantom Draft Top 5</div>
+    <table>
+      <thead><tr><th>Rank</th><th>Player</th><th>Pos</th><th>Team</th><th>Rating</th></tr></thead>
+      <tbody>
+        <tr><td><span class="rank-badge rank-1">1</span></td><td>Lachlan Hargraves</td><td><span class="pos-tag">MID</span></td><td>Sandringham Dragons</td><td>92.4 <span class="rating-bar"><span class="fill" style="width:92%"></span></span></td></tr>
+        <tr><td><span class="rank-badge rank-2">2</span></td><td>Riley Thornton</td><td><span class="pos-tag">FWD</span></td><td>Oakleigh Chargers</td><td>89.1 <span class="rating-bar"><span class="fill" style="width:89%"></span></span></td></tr>
+        <tr><td><span class="rank-badge rank-3">3</span></td><td>Jake Munro</td><td><span class="pos-tag">DEF</span></td><td>GWV Rebels</td><td>87.6 <span class="rating-bar"><span class="fill" style="width:87%"></span></span></td></tr>
+        <tr><td><span class="rank-badge rank-4">4</span></td><td>Sam Whitford</td><td><span class="pos-tag">RUCK</span></td><td>Murray Bushrangers</td><td>85.3 <span class="rating-bar"><span class="fill" style="width:85%"></span></span></td></tr>
+        <tr><td><span class="rank-badge rank-4">5</span></td><td>Tom Birrell</td><td><span class="pos-tag">MID</span></td><td>Calder Cannons</td><td>84.0 <span class="rating-bar"><span class="fill" style="width:84%"></span></span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Player Card 2x tall -->
+  <div class="tile tall span2">
+    <div class="tile-label">Featured Prospect</div>
+    <div class="player-card">
+      <div class="player-header">
+        <div class="player-avatar">LH</div>
+        <div><div class="player-name">Lachlan Hargraves</div><div class="player-meta">Midfielder &bull; 186cm &bull; 82kg &bull; DOB: 14/03/2008</div></div>
+      </div>
+      <div class="radar-wrap">
+        <svg viewBox="0 0 200 200">
+          <polygon class="radar-grid" points="100,20 168,55 168,145 100,180 32,145 32,55"/>
+          <polygon class="radar-grid" points="100,44 152,67 152,133 100,156 48,133 48,67"/>
+          <polygon class="radar-grid" points="100,68 136,79 136,121 100,132 64,121 64,79"/>
+          <polygon class="radar-shape" points="100,26 164,62 155,140 100,165 45,120 40,58"/>
+          <text class="radar-label" x="100" y="14">Speed</text>
+          <text class="radar-label" x="178" y="55">Kicking</text>
+          <text class="radar-label" x="178" y="152">Marking</text>
+          <text class="radar-label" x="100" y="196">Tackling</text>
+          <text class="radar-label" x="20" y="152">Handball</text>
+          <text class="radar-label" x="20" y="55">Endurance</text>
+        </svg>
+      </div>
+      <div class="stat-pills">
+        <div class="pill"><strong>28.3</strong>Disposals</div>
+        <div class="pill"><strong>6.2</strong>Clearances</div>
+        <div class="pill"><strong>5.8</strong>Tackles</div>
+        <div class="pill"><strong>4.1</strong>I50s</div>
+      </div>
+      <div class="scout-report">Elite ball-winner with a penetrating left-foot kick. Dominates at centre bounces and has the endurance to run all day. Needs to improve his overhead marking but has all the tools to be a top-5 pick.</div>
+    </div>
+  </div>
+</div>
+
+<footer>&copy; 2026 FootyScope. AFL Draft Prospect Scouting &amp; Analytics.</footer>
+</body>
+</html>

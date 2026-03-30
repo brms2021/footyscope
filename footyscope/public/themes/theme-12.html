@@ -1,0 +1,148 @@
+<!-- Theme 12: "Glassmorphism Dark" - Modern layered depth through transparency and frosted glass -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FootyScope - Glassmorphism Dark</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Nunito', sans-serif; background: #0C0A1A; color: #E0E7FF; min-height: 100vh; overflow-x: hidden; }
+  body::before { content: ''; position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 20% 50%, rgba(20,184,166,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(99,102,241,0.12) 0%, transparent 50%), radial-gradient(circle at 60% 80%, rgba(236,72,153,0.08) 0%, transparent 50%); z-index: -1; animation: meshMove 20s ease-in-out infinite alternate; }
+  @keyframes meshMove { 0% { transform: translate(0,0); } 100% { transform: translate(-5%,3%); } }
+
+  .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; }
+  .glass-strong { background: rgba(255,255,255,0.1); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 32px; position: sticky; top: 0; z-index: 50; background: rgba(12,10,26,0.7); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .logo { font-size: 24px; font-weight: 800; color: #14B8A6; }
+  .logo span { color: #E0E7FF; font-weight: 300; }
+  .nav-links { display: flex; gap: 28px; font-size: 14px; font-weight: 600; }
+  .nav-links a { color: rgba(255,255,255,0.5); text-decoration: none; transition: color 0.2s; }
+  .nav-links a:hover { color: #14B8A6; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 64px 24px; margin-bottom: 32px; }
+  .hero h1 { font-size: 48px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+  .hero h1 .accent { color: #14B8A6; }
+  .hero p { font-size: 17px; font-weight: 300; color: rgba(255,255,255,0.5); max-width: 520px; margin: 0 auto; line-height: 1.7; }
+  .hero-stats { display: flex; justify-content: center; gap: 48px; margin-top: 32px; }
+  .hero-stat { text-align: center; }
+  .hero-stat .val { font-size: 36px; font-weight: 800; color: #14B8A6; }
+  .hero-stat .lbl { font-size: 12px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Table Card */
+  .section { margin-bottom: 32px; }
+  .section-title { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.3); margin-bottom: 16px; font-weight: 700; }
+  .table-card { padding: 24px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.3); padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  td { padding: 14px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  tr:hover td { background: rgba(20,184,166,0.05); }
+  .rank-num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 10px; background: rgba(20,184,166,0.15); color: #14B8A6; font-weight: 800; font-size: 13px; }
+  .pos { background: rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; }
+  .rating-num { font-weight: 800; color: #14B8A6; }
+
+  /* Player Profile */
+  .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .profile-card { padding: 28px; }
+  .p-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+  .p-avatar { width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, #14B8A6, #6366F1); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; }
+  .p-name { font-size: 22px; font-weight: 800; }
+  .p-meta { font-size: 13px; color: rgba(255,255,255,0.4); font-weight: 300; }
+
+  .radar-svg { display: block; margin: 0 auto; }
+  .radar-grid-line { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 0.5; }
+  .radar-fill { fill: rgba(20,184,166,0.2); stroke: #14B8A6; stroke-width: 1.5; }
+  .radar-dot { fill: #14B8A6; }
+  .radar-label { font-size: 8px; fill: rgba(255,255,255,0.4); text-anchor: middle; font-family: 'Nunito', sans-serif; }
+
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .stat-item { padding: 14px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+  .stat-item .sv { font-size: 22px; font-weight: 800; color: #14B8A6; }
+  .stat-item .sl { font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  .scout-text { font-size: 14px; line-height: 1.8; color: rgba(255,255,255,0.5); font-weight: 300; padding: 16px; border-left: 2px solid rgba(20,184,166,0.4); }
+
+  footer { text-align: center; padding: 40px 24px; font-size: 12px; color: rgba(255,255,255,0.2); }
+
+  @media (max-width: 768px) {
+    .profile-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 32px; }
+    .hero-stats { gap: 24px; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">Footy<span>Scope</span></div>
+  <div class="nav-links"><a href="#">Rankings</a><a href="#">Scouting</a><a href="#">Draft</a><a href="#">Compare</a></div>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <h1>Scouting the <span class="accent">Future</span></h1>
+    <p>Deep analytics and scouting intelligence for every prospect in the 2026 AFL National Draft class.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="val">312</div><div class="lbl">Prospects</div></div>
+      <div class="hero-stat"><div class="val">1.2K</div><div class="lbl">Reports</div></div>
+      <div class="hero-stat"><div class="val">18</div><div class="lbl">Clubs</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Top Prospects</div>
+    <div class="table-card glass">
+      <table>
+        <thead><tr><th>Rank</th><th>Player</th><th>Pos</th><th>Club</th><th>Rating</th></tr></thead>
+        <tbody>
+          <tr><td><span class="rank-num">1</span></td><td>Angus McKellar</td><td><span class="pos">MID</span></td><td>Eastern Ranges</td><td><span class="rating-num">93.1</span></td></tr>
+          <tr><td><span class="rank-num">2</span></td><td>Darcy Flanagan</td><td><span class="pos">FWD</span></td><td>Gippsland Power</td><td><span class="rating-num">90.7</span></td></tr>
+          <tr><td><span class="rank-num">3</span></td><td>Will Cuthbertson</td><td><span class="pos">DEF</span></td><td>Sandringham Dragons</td><td><span class="rating-num">88.4</span></td></tr>
+          <tr><td><span class="rank-num">4</span></td><td>Noah Pemberton</td><td><span class="pos">MID</span></td><td>Oakleigh Chargers</td><td><span class="rating-num">86.9</span></td></tr>
+          <tr><td><span class="rank-num">5</span></td><td>Ethan Callaway</td><td><span class="pos">RUCK</span></td><td>Calder Cannons</td><td><span class="rating-num">85.2</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Featured Prospect</div>
+    <div class="profile-grid">
+      <div class="profile-card glass-strong">
+        <div class="p-header">
+          <div class="p-avatar">AM</div>
+          <div><div class="p-name">Angus McKellar</div><div class="p-meta">Midfielder &bull; 188cm &bull; 84kg &bull; Eastern Ranges</div></div>
+        </div>
+        <svg class="radar-svg" viewBox="0 0 200 200" width="200" height="200">
+          <polygon class="radar-grid-line" points="100,20 168,55 168,145 100,180 32,145 32,55"/>
+          <polygon class="radar-grid-line" points="100,44 152,67 152,133 100,156 48,133 48,67"/>
+          <polygon class="radar-grid-line" points="100,68 136,79 136,121 100,132 64,121 64,79"/>
+          <polygon class="radar-fill" points="100,24 165,58 160,142 100,170 38,130 36,60"/>
+          <circle class="radar-dot" cx="100" cy="24" r="3"/><circle class="radar-dot" cx="165" cy="58" r="3"/>
+          <circle class="radar-dot" cx="160" cy="142" r="3"/><circle class="radar-dot" cx="100" cy="170" r="3"/>
+          <circle class="radar-dot" cx="38" cy="130" r="3"/><circle class="radar-dot" cx="36" cy="60" r="3"/>
+          <text class="radar-label" x="100" y="14">Speed</text><text class="radar-label" x="180" y="55">Kicking</text>
+          <text class="radar-label" x="180" y="152">Marking</text><text class="radar-label" x="100" y="196">Tackling</text>
+          <text class="radar-label" x="18" y="152">Handball</text><text class="radar-label" x="18" y="55">Endurance</text>
+        </svg>
+      </div>
+      <div class="profile-card glass">
+        <div class="stats-grid">
+          <div class="stat-item"><div class="sv">30.1</div><div class="sl">Disposals</div></div>
+          <div class="stat-item"><div class="sv">7.4</div><div class="sl">Clearances</div></div>
+          <div class="stat-item"><div class="sv">6.1</div><div class="sl">Tackles</div></div>
+          <div class="stat-item"><div class="sv">5.3</div><div class="sl">Inside 50s</div></div>
+        </div>
+        <div class="scout-text">A generational midfielder with elite contested-ball winning ability. McKellar combines an explosive first step with exceptional decision-making under pressure. His kicking efficiency of 72% is well above average. Projected top-3 selection.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>&copy; 2026 FootyScope &mdash; AFL Draft Scouting &amp; Analytics Platform</footer>
+</body>
+</html>
