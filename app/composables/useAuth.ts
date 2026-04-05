@@ -1,6 +1,7 @@
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
   GoogleAuthProvider,
   signOut,
 } from 'firebase/auth'
@@ -16,6 +17,7 @@ const _roleLoaded = ref(false)
 
 export function useAuth() {
   const user = useCurrentUser()
+  const auth = import.meta.client ? useFirebaseAuth() : null
   const error = ref<string | null>(null)
 
   const isOwner = computed(() => _role.value === 'owner')
@@ -60,7 +62,6 @@ export function useAuth() {
   }
 
   async function login(email: string, password: string) {
-    const auth = useFirebaseAuth()
     if (!auth) return
     error.value = null
     try {
@@ -76,21 +77,30 @@ export function useAuth() {
   }
 
   async function loginWithGoogle() {
-    const auth = useFirebaseAuth()
     if (!auth) return
     error.value = null
     try {
       const provider = new GoogleAuthProvider()
-      await signInWithPopup(auth, provider)
+      // Try popup first, fall back to redirect if blocked
+      try {
+        await signInWithPopup(auth, provider)
+      } catch (popupError: any) {
+        if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/cancelled-popup-request') {
+          await signInWithRedirect(auth, provider)
+        } else if (popupError.code === 'auth/popup-closed-by-user') {
+          return
+        } else {
+          throw popupError
+        }
+      }
     } catch (e: any) {
-      if (e.code === 'auth/popup-closed-by-user') return
       error.value = e.message ?? 'Google sign-in failed'
+      console.error('Google sign-in error:', e.code, e.message)
       throw e
     }
   }
 
   async function logout() {
-    const auth = useFirebaseAuth()
     if (!auth) return
     await signOut(auth)
     _role.value = 'user'

@@ -18,11 +18,15 @@
           {{ item.label }}
         </NuxtLink>
       </nav>
-      <div class="border-t border-border p-4">
+      <div class="border-t border-border p-4 space-y-2">
         <NuxtLink to="/" class="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
           <ArrowLeft class="h-4 w-4" />
           Back to site
         </NuxtLink>
+        <button @click="handleLogout" class="flex items-center gap-2 text-sm text-muted-foreground hover:text-destructive transition-colors w-full">
+          <LogOut class="h-4 w-4" />
+          Sign out
+        </button>
       </div>
     </aside>
 
@@ -75,9 +79,15 @@
 </template>
 
 <script setup lang="ts">
-import { LayoutDashboard, FileText, Users, Trophy, Mail, MessageSquare, Shield, ArrowLeft, Menu, X } from 'lucide-vue-next'
+import { LayoutDashboard, FileText, Users, Trophy, Mail, MessageSquare, Shield, ArrowLeft, LogOut, Menu, X } from 'lucide-vue-next'
 
-const { isOwner } = useAuth()
+const { isOwner, logout } = useAuth()
+const router = useRouter()
+
+async function handleLogout() {
+  await logout()
+  router.push('/')
+}
 const mobileOpen = ref(false)
 
 const allNavItems = [

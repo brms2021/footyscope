@@ -17,14 +17,23 @@
           {{ link.label }}
         </NuxtLink>
         <ColorModeToggle />
-        <NuxtLink
-          v-if="user"
-          to="/admin"
-          class="inline-flex h-8 items-center gap-1.5 rounded-md bg-primary/10 px-3 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
-        >
-          <UserCog class="h-3.5 w-3.5" />
-          Admin
-        </NuxtLink>
+        <template v-if="user">
+          <NuxtLink
+            v-if="isStaff"
+            to="/admin"
+            class="inline-flex h-8 items-center gap-1.5 rounded-md bg-primary/10 px-3 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
+          >
+            <UserCog class="h-3.5 w-3.5" />
+            Admin
+          </NuxtLink>
+          <button
+            @click="handleLogout"
+            class="inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-3 text-xs font-medium text-muted-foreground hover:text-destructive hover:border-destructive/40 transition-colors"
+          >
+            <LogOutIcon class="h-3.5 w-3.5" />
+            Logout
+          </button>
+        </template>
         <NuxtLink
           v-else
           to="/admin/login"
@@ -45,9 +54,15 @@
 </template>
 
 <script setup lang="ts">
-import { LogIn, UserCog } from 'lucide-vue-next'
+import { LogIn, LogOut as LogOutIcon, UserCog } from 'lucide-vue-next'
 
-const { user } = useAuth()
+const { user, isStaff, logout } = useAuth()
+const router = useRouter()
+
+async function handleLogout() {
+  await logout()
+  router.push('/')
+}
 
 const navLinks = [
   { label: 'Rankings', to: '/rankings' },
