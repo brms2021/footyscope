@@ -4,13 +4,47 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "deploy": "nuxt generate && npx firebase-tools deploy --only hosting",
+    "dev": "nuxt dev --port 3000",
+    "predev": "node scripts/kill-port.cjs",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxtjs/sitemap": "^8.0.11",
+    "@tailwindcss/vite": "^4.2.2",
+    "@tiptap/extension-highlight": "^3.21.0",
+    "@tiptap/extension-image": "^3.21.0",
+    "@tiptap/extension-link": "^3.21.0",
+    "@tiptap/extension-placeholder": "^3.21.0",
+    "@tiptap/extension-text-align": "^3.21.0",
+    "@tiptap/extension-underline": "^3.21.0",
+    "@tiptap/extension-youtube": "^3.21.0",
+    "@tiptap/pm": "^3.21.0",
+    "@tiptap/starter-kit": "^3.21.0",
+    "@tiptap/vue-3": "^3.21.0",
+    "@vueuse/motion": "^3.0.3",
+    "chart.js": "^4.5.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "firebase": "^12.11.0",
+    "firebase-functions": "^6.6.0",
     "nuxt": "^3.21.2",
-    "vue": "latest"
+    "nuxt-vuefire": "^1.1.0",
+    "radix-vue": "^1.9.17",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^4.2.2",
+    "vue": "latest",
+    "vue-chartjs": "^5.3.3"
+  },
+  "devDependencies": {
+    "@nuxtjs/color-mode": "^4.0.0",
+    "@nuxtjs/google-fonts": "^3.2.0",
+    "dotenv": "^17.3.1",
+    "firebase-admin": "^13.7.0",
+    "lucide-vue-next": "^1.0.0",
+    "shadcn-nuxt": "^2.4.3",
+    "tsx": "^4.21.0"
   }
 }
