@@ -36,6 +36,39 @@
             >
               {{ link.label }}
             </NuxtLink>
+
+            <hr class="my-2 border-border" />
+
+            <template v-if="user">
+              <div class="px-3 py-2 text-xs text-muted-foreground truncate">
+                {{ user.displayName || user.email }}
+              </div>
+              <NuxtLink
+                v-if="isStaff"
+                to="/admin"
+                class="rounded-md px-3 py-2 text-sm font-medium text-primary hover:bg-accent transition-colors flex items-center gap-2"
+                @click="open = false"
+              >
+                <UserCog class="h-4 w-4" />
+                Admin
+              </NuxtLink>
+              <button
+                @click="handleLogout"
+                class="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-accent transition-colors flex items-center gap-2 w-full text-left"
+              >
+                <LogOutIcon class="h-4 w-4" />
+                Logout
+              </button>
+            </template>
+            <NuxtLink
+              v-else
+              to="/admin/login"
+              class="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:text-primary hover:bg-accent transition-colors flex items-center gap-2"
+              @click="open = false"
+            >
+              <LogIn class="h-4 w-4" />
+              Login
+            </NuxtLink>
           </nav>
         </div>
       </Transition>
@@ -44,13 +77,21 @@
 </template>
 
 <script setup lang="ts">
-import { Menu as IconMenu, X as IconX } from 'lucide-vue-next'
+import { Menu as IconMenu, X as IconX, LogIn, LogOut as LogOutIcon, UserCog } from 'lucide-vue-next'
 
 defineProps<{
   links: Array<{ label: string; to: string }>
 }>()
 
 const open = ref(false)
+const { user, isStaff, logout } = useAuth()
+const router = useRouter()
+
+async function handleLogout() {
+  await logout()
+  open.value = false
+  router.push('/')
+}
 </script>
 
 <style scoped>

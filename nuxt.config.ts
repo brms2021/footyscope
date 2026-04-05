@@ -81,8 +81,8 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    ownerEmails: env.OWNERS || '',
     public: {
+      ownerEmails: env.OWNERS || '',
       googleClientId: env.GOOGLE_CLIENT_ID || '',
     },
   },

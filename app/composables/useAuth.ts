@@ -9,9 +9,6 @@ import { doc, getDoc } from 'firebase/firestore'
 
 export type UserRole = 'owner' | 'moderator' | 'user'
 
-// Owner emails - loaded from runtime config
-const OWNER_EMAILS = ['rieleyjc@outlook.com', 'brandtmatstevenson@gmail.com', 'brandt@quotehound.com.au']
-
 const _role = ref<UserRole>('user')
 const _roleLoaded = ref(false)
 
@@ -19,6 +16,11 @@ export function useAuth() {
   const user = useCurrentUser()
   const auth = import.meta.client ? useFirebaseAuth() : null
   const error = ref<string | null>(null)
+  const config = useRuntimeConfig()
+  const ownerEmails = (config.public.ownerEmails as string)
+    .split(',')
+    .map(e => e.trim().toLowerCase())
+    .filter(Boolean)
 
   const isOwner = computed(() => _role.value === 'owner')
   const isMod = computed(() => _role.value === 'moderator')
@@ -28,7 +30,9 @@ export function useAuth() {
   if (import.meta.client) {
     watch(user, async (u) => {
       if (u?.email) {
+        console.log('[Auth] User logged in:', u.email, '| Checking role...')
         await fetchRole(u.email)
+        console.log('[Auth] Role resolved:', _role.value)
       } else {
         _role.value = 'user'
         _roleLoaded.value = false
@@ -40,7 +44,7 @@ export function useAuth() {
     const lower = email.toLowerCase()
 
     // Check owners
-    if (OWNER_EMAILS.map(e => e.toLowerCase()).includes(lower)) {
+    if (ownerEmails.includes(lower)) {
       _role.value = 'owner'
       _roleLoaded.value = true
       return

@@ -18,6 +18,9 @@
         </NuxtLink>
         <ColorModeToggle />
         <template v-if="user">
+          <span class="text-xs text-muted-foreground truncate max-w-[150px]" :title="user.email ?? ''">
+            {{ user.displayName || user.email }}
+          </span>
           <NuxtLink
             v-if="isStaff"
             to="/admin"
