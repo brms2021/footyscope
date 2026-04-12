@@ -40,109 +40,76 @@ async function updatePlayerStats(playerId, stats) {
   console.log(`  ✓ Updated stats for player ${playerId}`)
 }
 
-// ─── Coates Talent League (AFL API) ──────────────────────────────────────────
+// ─── Coates Talent League (AFL statspro API) ─────────────────────────────────
 // Covers VIC, NSW, QLD, TAS players
+// Season ID format: CD_S{YEAR}011 — e.g. CD_S2026011 for 2026
 async function fetchCoatesStats() {
   console.log('\n📡 Fetching Coates Talent League stats...')
 
-  // Get auth token
+  const year = new Date().getFullYear()
+  const seasonId = `CD_S${year}011`
+
   const tokenRes = await fetch('https://api.afl.com.au/cfs/afl/WMCTok', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: '{}',
   })
   const { token } = await tokenRes.json()
-  const headers = { 'x-media-mis-token': token }
 
-  // Get current season rounds (competition 13 = Coates Talent League Boys)
-  const seasonRes = await fetch(
-    'https://api.afl.com.au/cfs/afl/season?seasonId=CD_S2026011',
-    { headers }
+  const res = await fetch(
+    `https://api.afl.com.au/statspro/playersStats/seasons/${seasonId}`,
+    {
+      headers: {
+        'x-media-mis-token': token,
+        'Accept': 'application/json',
+        'Accept-Encoding': 'identity',
+      },
+    }
   )
-  const seasonData = await seasonRes.json()
-  const rounds = seasonData?.nav?.rounds ?? []
-  console.log(`  Found ${rounds.length} rounds`)
 
-  // Aggregate stats per player across all rounds
-  const playerStats = {}
-
-  for (const round of rounds) {
-    const roundId = round.providerId
-    if (!roundId) continue
-
-    const matchesRes = await fetch(
-      `https://api.afl.com.au/cfs/afl/matchItems/round/${roundId}`,
-      { headers }
+  if (!res.ok) {
+    console.log(`  Season ${seasonId} returned ${res.status} — trying previous year`)
+    const fallbackId = `CD_S${year - 1}011`
+    const res2 = await fetch(
+      `https://api.afl.com.au/statspro/playersStats/seasons/${fallbackId}`,
+      { headers: { 'x-media-mis-token': token, 'Accept': 'application/json', 'Accept-Encoding': 'identity' } }
     )
-    const matchesData = await matchesRes.json()
-    const matches = matchesData?.matches ?? []
-
-    for (const match of matches) {
-      const matchId = match.providerId
-      if (!matchId) continue
-
-      const statsRes = await fetch(
-        `https://api.afl.com.au/cfs/afl/playerStats/match/${matchId}`,
-        { headers }
-      )
-      const statsData = await statsRes.json()
-      const allPlayers = [
-        ...(statsData?.homeTeamPlayerStats?.playerStats ?? []),
-        ...(statsData?.awayTeamPlayerStats?.playerStats ?? []),
-      ]
-
-      for (const p of allPlayers) {
-        const name = `${p.player?.givenName ?? ''} ${p.player?.surname ?? ''}`.trim()
-        if (!name) continue
-        if (!playerStats[name]) {
-          playerStats[name] = {
-            gamesPlayed: 0, disposals: 0, kicks: 0, handballs: 0,
-            marks: 0, tackles: 0, goals: 0, behinds: 0,
-            contestedPossessions: 0, inside50s: 0, hitouts: 0,
-          }
-        }
-        const s = playerStats[name]
-        const st = p.playerStats?.stats ?? {}
-        s.gamesPlayed += 1
-        s.disposals += st.disposals ?? 0
-        s.kicks += st.kicks ?? 0
-        s.handballs += st.handballs ?? 0
-        s.marks += st.marks ?? 0
-        s.tackles += st.tackles ?? 0
-        s.goals += st.goals ?? 0
-        s.behinds += st.behinds ?? 0
-        s.contestedPossessions += st.contestedPossessions ?? 0
-        s.inside50s += st.inside50s ?? 0
-        s.hitouts += st.hitouts ?? 0
-      }
-    }
+    if (!res2.ok) throw new Error(`Both ${seasonId} and ${fallbackId} failed`)
+    return parseCoatesResponse(await res2.json())
   }
 
-  // Average out per game
-  const averaged = {}
-  for (const [name, s] of Object.entries(playerStats)) {
-    if (s.gamesPlayed === 0) continue
-    averaged[name] = {
-      gamesPlayed: s.gamesPlayed,
-      disposals: round2(s.disposals / s.gamesPlayed),
-      kicks: round2(s.kicks / s.gamesPlayed),
-      handballs: round2(s.handballs / s.gamesPlayed),
-      marks: round2(s.marks / s.gamesPlayed),
-      tackles: round2(s.tackles / s.gamesPlayed),
-      goals: round2(s.goals / s.gamesPlayed),
-      behinds: round2(s.behinds / s.gamesPlayed),
-      contestedPossessions: round2(s.contestedPossessions / s.gamesPlayed),
-      inside50s: round2(s.inside50s / s.gamesPlayed),
-      hitouts: s.hitouts > 0 ? round2(s.hitouts / s.gamesPlayed) : null,
-      uncontestedPossessions: null,
-      clearances: null,
-      metresGained: null,
-      disposalEfficiency: null,
+  return parseCoatesResponse(await res.json())
+}
+
+function parseCoatesResponse(data) {
+  const players = data?.players ?? []
+  console.log(`  Found ${players.length} Coates Talent League players`)
+  const result = {}
+  for (const p of players) {
+    const g = p.gamesPlayed
+    if (!g) continue
+    const name = `${p.playerDetails?.givenName ?? ''} ${p.playerDetails?.surname ?? ''}`.trim()
+    if (!name) continue
+    const avg = p.averages ?? {}
+    result[name] = {
+      gamesPlayed: g,
+      disposals: avg.disposals ?? null,
+      kicks: avg.kicks ?? null,
+      handballs: avg.handballs ?? null,
+      marks: avg.marks ?? null,
+      tackles: avg.tackles ?? null,
+      goals: avg.goals ?? null,
+      behinds: avg.behinds ?? null,
+      hitouts: avg.hitouts > 0 ? avg.hitouts : null,
+      inside50s: avg.inside50s ?? null,
+      contestedPossessions: avg.contestedPossessions ?? null,
+      uncontestedPossessions: avg.uncontestedPossessions ?? null,
+      clearances: avg.clearances ?? null,
+      metresGained: avg.metresGained ?? null,
+      disposalEfficiency: avg.disposalEfficiency ?? null,
     }
   }
-
-  console.log(`  Aggregated stats for ${Object.keys(averaged).length} players`)
-  return averaged
+  return result
 }
 
 // ─── WAFL Colts (Sportix Cloud API) ──────────────────────────────────────────
