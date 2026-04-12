@@ -50,10 +50,6 @@
             <label class="text-sm font-medium">Height (cm)</label>
             <input v-model.number="form.height" type="number" class="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
           </div>
-          <div class="space-y-2">
-            <label class="text-sm font-medium">Weight (kg)</label>
-            <input v-model.number="form.weight" type="number" class="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-          </div>
         </div>
       </section>
 
@@ -219,11 +215,12 @@ const store = useAdminStore()
 const router = useRouter()
 
 const attributeLabels = [
-  { key: 'athleticism', label: 'Athleticism' },
+  { key: 'speedAgility', label: 'Speed / Agility' },
+  { key: 'strengthPower', label: 'Strength / Power' },
+  { key: 'workRate', label: 'Work Rate' },
   { key: 'kicking', label: 'Kicking' },
   { key: 'marking', label: 'Marking' },
   { key: 'ballWinning', label: 'Ball Winning' },
-  { key: 'decisionMaking', label: 'Decision Making' },
   { key: 'footballIQ', label: 'Football IQ' },
   { key: 'versatility', label: 'Versatility' },
   { key: 'competitiveness', label: 'Competitiveness' },
@@ -240,11 +237,11 @@ const form = reactive({
   dateOfBirth: '',
   draftYear: 2026,
   height: 185,
-  weight: 80,
   rating: 70,
   attributes: {
-    athleticism: 50, kicking: 50, marking: 50, ballWinning: 50,
-    decisionMaking: 50, footballIQ: 50, versatility: 50, competitiveness: 50, ceiling: 50,
+    speedAgility: 50, strengthPower: 50, workRate: 50,
+    kicking: 50, marking: 50, ballWinning: 50,
+    footballIQ: 50, versatility: 50, competitiveness: 50, ceiling: 50,
   } as PlayerAttributes,
   bio: '',
   scoutingReport: '',
@@ -318,7 +315,6 @@ function save() {
     dateOfBirth: form.dateOfBirth,
     draftYear: form.draftYear,
     height: form.height,
-    weight: form.weight,
     rating: form.rating,
     attributes: { ...form.attributes },
     combineStats: hasCombine ? { ...combineStats, twoKmTimeTrial: combineStats.twoKmTimeTrial || null } : null,

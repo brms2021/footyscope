@@ -19,7 +19,6 @@
             <p class="mt-1 text-cream-dark">{{ data.position }} · {{ data.team }} · {{ data.state }}</p>
             <div class="mt-3 flex flex-wrap gap-4 text-sm text-cream-dark">
               <span class="font-stats">{{ data.height }}cm</span>
-              <span class="font-stats">{{ data.weight }}kg</span>
               <span>DOB: {{ formatDate(data.dateOfBirth) }}</span>
               <span>Draft: {{ data.draftYear }}</span>
             </div>
@@ -188,7 +187,6 @@ useHead({
       name: data.value.name,
       description: data.value.bio,
       height: { '@type': 'QuantitativeValue', value: data.value.height, unitCode: 'CMT' },
-      weight: { '@type': 'QuantitativeValue', value: data.value.weight, unitCode: 'KGM' },
       birthDate: data.value.dateOfBirth,
       memberOf: { '@type': 'SportsTeam', name: data.value.team },
     }),

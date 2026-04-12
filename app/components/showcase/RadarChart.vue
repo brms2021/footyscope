@@ -28,11 +28,12 @@ const props = defineProps<{
 }>()
 
 const labels = [
-  'Athleticism',
+  'Speed / Agility',
+  'Strength / Power',
+  'Work Rate',
   'Kicking',
   'Marking',
   'Ball Winning',
-  'Decision Making',
   'Football IQ',
   'Versatility',
   'Competitiveness',

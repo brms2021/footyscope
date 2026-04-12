@@ -36,7 +36,6 @@
           <div class="space-y-2"><label class="text-sm font-medium">Date of Birth</label><input v-model="form.dateOfBirth" type="date" class="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" /></div>
           <div class="space-y-2"><label class="text-sm font-medium">Draft Year</label><input v-model.number="form.draftYear" type="number" class="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" /></div>
           <div class="space-y-2"><label class="text-sm font-medium">Height (cm)</label><input v-model.number="form.height" type="number" class="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" /></div>
-          <div class="space-y-2"><label class="text-sm font-medium">Weight (kg)</label><input v-model.number="form.weight" type="number" class="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring" /></div>
         </div>
       </section>
 
@@ -155,11 +154,11 @@ const playerId = route.params.id as string
 const player = store.getPlayer(playerId)
 
 const attributeLabels = [
-  { key: 'athleticism', label: 'Athleticism' }, { key: 'kicking', label: 'Kicking' },
+  { key: 'speedAgility', label: 'Speed / Agility' }, { key: 'strengthPower', label: 'Strength / Power' },
+  { key: 'workRate', label: 'Work Rate' }, { key: 'kicking', label: 'Kicking' },
   { key: 'marking', label: 'Marking' }, { key: 'ballWinning', label: 'Ball Winning' },
-  { key: 'decisionMaking', label: 'Decision Making' }, { key: 'footballIQ', label: 'Football IQ' },
-  { key: 'versatility', label: 'Versatility' }, { key: 'competitiveness', label: 'Competitiveness' },
-  { key: 'ceiling', label: 'Ceiling' },
+  { key: 'footballIQ', label: 'Football IQ' }, { key: 'versatility', label: 'Versatility' },
+  { key: 'competitiveness', label: 'Competitiveness' }, { key: 'ceiling', label: 'Ceiling' },
 ]
 
 const gameStatLabels = [
@@ -197,9 +196,8 @@ const form = reactive({
   dateOfBirth: player?.dateOfBirth ?? '',
   draftYear: player?.draftYear ?? 2026,
   height: player?.height ?? 185,
-  weight: player?.weight ?? 80,
   rating: player?.rating ?? 70,
-  attributes: { ...(player?.attributes ?? { athleticism: 50, kicking: 50, marking: 50, ballWinning: 50, decisionMaking: 50, footballIQ: 50, versatility: 50, competitiveness: 50, ceiling: 50 }) } as PlayerAttributes,
+  attributes: { ...(player?.attributes ?? { speedAgility: 50, strengthPower: 50, workRate: 50, kicking: 50, marking: 50, ballWinning: 50, footballIQ: 50, versatility: 50, competitiveness: 50, ceiling: 50 }) } as PlayerAttributes,
   gameStats: { ...defaultGameStats, ...(player?.gameStats ?? {}) } as GameStats,
   bio: player?.bio ?? '',
   scoutingReport: player?.scoutingReport ?? '',
@@ -215,8 +213,9 @@ const attributesArray = computed(() => getAttributesArray(form.attributes))
 
 function save() {
   if (!player) return
+  const { weight: _w, ...playerRest } = player as any
   store.savePlayer({
-    ...player,
+    ...playerRest,
     ...form,
     name: `${form.firstName} ${form.lastName}`,
     attributes: { ...form.attributes },

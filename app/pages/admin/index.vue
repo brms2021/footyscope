@@ -18,6 +18,12 @@
       <NuxtLink to="/admin/players/new" class="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-accent transition-colors">
         <Plus class="h-4 w-4" /> Add Player
       </NuxtLink>
+      <NuxtLink to="/admin/consensus" class="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-accent transition-colors">
+        Edit Consensus Rankings
+      </NuxtLink>
+      <NuxtLink to="/admin/site-content" class="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-accent transition-colors">
+        Edit Site Content
+      </NuxtLink>
     </div>
 
     <!-- Recent articles -->

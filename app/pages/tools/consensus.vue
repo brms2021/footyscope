@@ -54,8 +54,7 @@
       </div>
 
       <p class="mt-6 text-xs text-muted-foreground">
-        Rankings sourced from publicly available phantom drafts and prospect rankings. Last updated: March 2026.
-        Sources: FootyScope, AFL.com.au (Cal Twomey), ESPN (Knightmare), Rookie Me Central, The Mongrel Punt.
+        {{ disclaimer || 'Rankings sourced from publicly available phantom drafts and prospect rankings.' }}
       </p>
     </div>
   </div>
@@ -67,6 +66,7 @@ import type { Player } from '~/types'
 useHead({ title: 'Consensus Rankings — FootyScope' })
 
 const allPlayers = useAllPlayers()
+const store = useAdminStore()
 
 const sources = [
   { name: 'FootyScope', short: 'FS', color: '#2d9d78' },
@@ -76,24 +76,13 @@ const sources = [
   { name: 'Mongrel', short: 'TMP', color: '#ec4899' },
 ]
 
-// Consensus data — rankings from each source
-// In production, this would come from Firestore. For now, hardcoded based on publicly available phantom drafts.
-const rawConsensus = [
-  { slug: 'dougie-cochrane', ranks: { 'FootyScope': 1, 'AFL.com.au': 1, 'ESPN': 1, 'Rookie Me': 1, 'Mongrel': 1 } },
-  { slug: 'cody-walker', ranks: { 'FootyScope': 2, 'AFL.com.au': 2, 'ESPN': 2, 'Rookie Me': 2, 'Mongrel': 2 } },
-  { slug: 'harry-van-hattum', ranks: { 'FootyScope': 3, 'AFL.com.au': 4, 'ESPN': 3, 'Rookie Me': 3, 'Mongrel': 4 } },
-  { slug: 'arki-butler', ranks: { 'FootyScope': 4, 'AFL.com.au': 3, 'ESPN': 5, 'Rookie Me': 5, 'Mongrel': 3 } },
-  { slug: 'marlon-neocleous', ranks: { 'FootyScope': 5, 'AFL.com.au': 6, 'ESPN': 4, 'Rookie Me': 4, 'Mongrel': 7 } },
-  { slug: 'heath-mellody', ranks: { 'FootyScope': 6, 'AFL.com.au': 5, 'ESPN': 6, 'Rookie Me': 7, 'Mongrel': 5 } },
-  { slug: 'jack-pickett', ranks: { 'FootyScope': 7, 'AFL.com.au': 7, 'ESPN': 8, 'Rookie Me': 6, 'Mongrel': 6 } },
-  { slug: 'lucas-robinson', ranks: { 'FootyScope': 8, 'AFL.com.au': 9, 'ESPN': 7, 'Rookie Me': 8, 'Mongrel': 9 } },
-  { slug: 'kodah-edwards', ranks: { 'FootyScope': 9, 'AFL.com.au': 8, 'ESPN': 10, 'Rookie Me': 9, 'Mongrel': 8 } },
-  { slug: 'koby-lecras', ranks: { 'FootyScope': 10, 'AFL.com.au': 10, 'ESPN': 9, 'Rookie Me': 10, 'Mongrel': 10 } },
-]
+const disclaimer = computed(() => store.siteContent.value?.consensusDisclaimer)
 
 const consensusData = computed(() => {
   const players = allPlayers.value ?? []
-  return rawConsensus.map(c => {
+  const rows = store.consensusRows.value
+  if (!rows.length) return []
+  return rows.map(c => {
     const player = players.find((p: Player) => p.slug === c.slug)
     const values = Object.values(c.ranks).filter((v): v is number => v != null)
     const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 99
@@ -104,8 +93,8 @@ const consensusData = computed(() => {
       photoUrl: player?.photoUrl ?? null,
       ranks: c.ranks,
       avg,
-      min: Math.min(...values),
-      max: Math.max(...values),
+      min: values.length ? Math.min(...values) : 0,
+      max: values.length ? Math.max(...values) : 0,
     }
   }).sort((a, b) => a.avg - b.avg)
 })

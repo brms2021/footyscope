@@ -1,9 +1,10 @@
 export interface PlayerAttributes {
-  athleticism: number
+  speedAgility: number
+  strengthPower: number
+  workRate: number
   kicking: number
   marking: number
   ballWinning: number
-  decisionMaking: number
   footballIQ: number
   versatility: number
   competitiveness: number
@@ -49,7 +50,6 @@ export interface Player {
   draftYear: number
   dateOfBirth: string
   height: number
-  weight: number
   photoUrl: string | null
   rating: number
   attributes: PlayerAttributes
@@ -100,6 +100,18 @@ export interface RankingEntry {
   rank: number
   previousRank: number | null
   updatedAt: string
+}
+
+export interface ConsensusRow {
+  id: string
+  order: number
+  slug: string
+  ranks: Record<string, number | null>
+}
+
+export interface SiteContent {
+  consensusDisclaimer: string
+  homepageHeader: string
 }
 
 export interface EOISubmission {
@@ -154,11 +166,12 @@ export interface ArticleFilters {
 
 export function getAttributesArray(attrs: PlayerAttributes): number[] {
   return [
-    attrs.athleticism,
+    attrs.speedAgility,
+    attrs.strengthPower,
+    attrs.workRate,
     attrs.kicking,
     attrs.marking,
     attrs.ballWinning,
-    attrs.decisionMaking,
     attrs.footballIQ,
     attrs.versatility,
     attrs.competitiveness,

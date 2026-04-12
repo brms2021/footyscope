@@ -1,13 +1,15 @@
 import {
-  collection, doc, getDocs, addDoc, updateDoc, deleteDoc,
-  query, where, orderBy,
+  collection, doc, getDocs, addDoc, updateDoc, deleteDoc, setDoc,
+  query, where, orderBy, getDoc,
 } from 'firebase/firestore'
-import type { Player, Article, RankingEntry, EOISubmission } from '~/types'
+import type { Player, Article, RankingEntry, EOISubmission, ConsensusRow, SiteContent } from '~/types'
 
 const players = ref<Player[]>([])
 const articles = ref<Article[]>([])
 const rankings = ref<RankingEntry[]>([])
 const eoiSubmissions = ref<EOISubmission[]>([])
+const consensusRows = ref<ConsensusRow[]>([])
+const siteContent = ref<SiteContent>({ consensusDisclaimer: '', homepageHeader: '' })
 const loaded = ref(false)
 
 export function useAdminStore() {
@@ -16,17 +18,21 @@ export function useAdminStore() {
   // Load all data from Firestore
   async function loadAll() {
     if (loaded.value) return
-    const [pSnap, aSnap, rSnap, eSnap] = await Promise.all([
+    const [pSnap, aSnap, rSnap, eSnap, cSnap, scDoc] = await Promise.all([
       getDocs(query(collection(db, 'players'), orderBy('rating', 'desc'))),
       getDocs(query(collection(db, 'articles'), orderBy('updatedAt', 'desc'))),
       getDocs(query(collection(db, 'rankings'), orderBy('rank', 'asc'))),
       getDocs(query(collection(db, 'eoiSubmissions'), orderBy('createdAt', 'desc'))),
+      getDocs(query(collection(db, 'consensus'), orderBy('order', 'asc'))),
+      getDoc(doc(db, 'siteContent', 'main')),
     ])
 
     players.value = pSnap.docs.map(d => ({ ...d.data(), id: d.id } as Player))
     articles.value = aSnap.docs.map(d => ({ ...d.data(), id: d.id } as Article))
     rankings.value = rSnap.docs.map(d => ({ ...d.data(), id: d.id } as RankingEntry))
     eoiSubmissions.value = eSnap.docs.map(d => ({ ...d.data(), id: d.id } as EOISubmission))
+    consensusRows.value = cSnap.docs.map(d => ({ ...d.data(), id: d.id } as ConsensusRow))
+    if (scDoc.exists()) siteContent.value = scDoc.data() as SiteContent
     loaded.value = true
   }
 
@@ -125,6 +131,27 @@ export function useAdminStore() {
       .sort((a, b) => a.rank - b.rank)
   }
 
+  // Consensus Rankings
+  async function saveConsensus(rows: ConsensusRow[]) {
+    // Delete existing
+    const existing = await getDocs(collection(db, 'consensus'))
+    for (const d of existing.docs) await deleteDoc(d.ref)
+    // Write new
+    const saved: ConsensusRow[] = []
+    for (let i = 0; i < rows.length; i++) {
+      const { id: _id, ...data } = { ...rows[i], order: i }
+      const docRef = await addDoc(collection(db, 'consensus'), data)
+      saved.push({ ...rows[i], id: docRef.id, order: i })
+    }
+    consensusRows.value = saved
+  }
+
+  // Site Content (disclaimers, editable text)
+  async function saveSiteContent(content: Partial<SiteContent>) {
+    await setDoc(doc(db, 'siteContent', 'main'), content, { merge: true })
+    siteContent.value = { ...siteContent.value, ...content }
+  }
+
   // EOI
   function getSubmissions() {
     return eoiSubmissions.value.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
@@ -141,6 +168,8 @@ export function useAdminStore() {
     articles,
     rankings,
     eoiSubmissions,
+    consensusRows,
+    siteContent,
     loaded,
     loadAll,
     getPlayer,
@@ -151,6 +180,8 @@ export function useAdminStore() {
     deleteArticle,
     saveRankings,
     getRankings,
+    saveConsensus,
+    saveSiteContent,
     getSubmissions,
     markSubmissionRead,
   }

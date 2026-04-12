@@ -32,7 +32,10 @@
 
     <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-sm font-medium uppercase tracking-widest text-teal mb-4">AFL Draft Scouting & Analytics</p>
-      <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-cream leading-tight">
+      <h1 v-if="heroHeader" class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-cream leading-tight">
+        {{ heroHeader }}
+      </h1>
+      <h1 v-else class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-cream leading-tight">
         2026 AFL Draft
         <span class="block bg-gradient-to-r from-teal to-teal-light bg-clip-text text-transparent">Prospects</span>
       </h1>
@@ -57,6 +60,11 @@
     </div>
   </section>
 </template>
+
+<script setup lang="ts">
+const store = useAdminStore()
+const heroHeader = computed(() => store.siteContent.value?.homepageHeader || '')
+</script>
 
 <style>
 .hero-image {

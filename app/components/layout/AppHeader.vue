@@ -71,8 +71,7 @@ const navLinks = [
   { label: 'Rankings', to: '/rankings' },
   { label: 'Articles', to: '/articles' },
   { label: 'Compare', to: '/tools/compare' },
-  { label: 'Mock Draft', to: '/tools/mock-draft' },
+  { label: 'Custom Rankings', to: '/tools/custom-rankings' },
   { label: 'Consensus', to: '/tools/consensus' },
-  { label: 'Podcast', to: '/podcast' },
 ]
 </script>

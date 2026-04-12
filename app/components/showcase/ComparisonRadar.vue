@@ -30,7 +30,7 @@ const props = defineProps<{
   playerB: Player
 }>()
 
-const labels = ['Athleticism', 'Kicking', 'Marking', 'Ball Winning', 'Decision Making', 'Football IQ', 'Versatility', 'Competitiveness', 'Ceiling']
+const labels = ['Speed / Agility', 'Strength / Power', 'Work Rate', 'Kicking', 'Marking', 'Ball Winning', 'Football IQ', 'Versatility', 'Competitiveness', 'Ceiling']
 
 const chartData = computed(() => ({
   labels,
